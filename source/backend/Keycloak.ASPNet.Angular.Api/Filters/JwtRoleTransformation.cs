@@ -8,6 +8,20 @@ namespace Keycloak.ASPNet.Angular.Api.Filters;
 /// <summary>
 /// Transforms provider specific roles to default role claims.
 /// </summary>
+/// <example>
+/// {
+///   "urn:zitadel:iam:org:project:301457556834877443:roles": {
+///     "Manage": {
+///       "301447273877929987": "zitadel.localhost"
+///     },
+///   },
+///   "urn:zitadel:iam:org:project:roles": {
+///     "Read": {
+///       "301447273877929987": "zitadel.localhost"
+///     }
+///   }
+/// }
+/// </example>
 /// <seealso cref="IClaimsTransformation" />
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Instantiated via DI.")]
 public class JwtRoleTransformation : IClaimsTransformation
