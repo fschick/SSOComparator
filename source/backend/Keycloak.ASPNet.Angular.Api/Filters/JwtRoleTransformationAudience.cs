@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Keycloak.ASPNet.Angular.Api.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -10,6 +13,15 @@ namespace Keycloak.ASPNet.Angular.Api.Filters;
 /// <summary>
 /// Transforms provider specific roles from audience to default role claims.
 /// </summary>
+/// <example>
+/// "resource_access": {
+///     "api": {
+///         "roles": [
+///             "manage"
+///         ]
+///     },
+/// },
+/// </example>
 /// <seealso cref="IClaimsTransformation" />
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Instantiated via DI.")]
 public class JwtRoleTransformationAudience : IClaimsTransformation
@@ -37,7 +49,26 @@ public class JwtRoleTransformationAudience : IClaimsTransformation
     {
         var result = principal.Clone();
 
-        // TODO: Implement provider specific transformation here.
+        if (result.Identity is not ClaimsIdentity identity)
+            return Task.FromResult(result);
+
+        var resourceAccessValue = principal.FindFirst("resource_access")?.Value;
+        if (string.IsNullOrWhiteSpace(resourceAccessValue))
+            return Task.FromResult(result);
+
+        var clients = JsonConvert.DeserializeObject<KeycloakJwtClientRoles>(resourceAccessValue);
+        if (clients == null)
+            return Task.FromResult(result);
+
+        var clientRoleContainer = clients.FirstOrDefault(x => x.Key == _audience);
+        if (clientRoleContainer.Key == null)
+            return Task.FromResult(result);
+
+        var clientRoles = clientRoleContainer.Value.Roles
+            .Where(role => !string.IsNullOrWhiteSpace(role));
+
+        foreach (var role in clientRoles)
+            identity.AddClaim(new Claim(ClaimsIdentity.DefaultRoleClaimType, role));
 
         return Task.FromResult(result);
     }

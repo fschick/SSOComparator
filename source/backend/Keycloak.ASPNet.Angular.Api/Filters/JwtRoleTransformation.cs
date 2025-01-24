@@ -8,6 +8,23 @@ namespace Keycloak.ASPNet.Angular.Api.Filters;
 /// <summary>
 /// Transforms provider specific roles to default role claims.
 /// </summary>
+/// <example>
+/// {
+///   "realm_access": {
+///     "roles": [
+///       "offline_access",
+///       "uma_authorization"
+///     ]
+///   },
+///   "resource_access": {
+///     "api": {
+///       "roles": [
+///         "manage"
+///       ]
+///     },
+///   },
+/// }
+/// </example>
 /// <seealso cref="IClaimsTransformation" />
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Instantiated via DI.")]
 public class JwtRoleTransformation : IClaimsTransformation

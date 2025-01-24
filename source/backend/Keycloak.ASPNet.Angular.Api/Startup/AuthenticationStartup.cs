@@ -32,7 +32,13 @@ internal static class AuthenticationStartup
                 options.Authority = jwtOptions.Authority;
                 options.Audience = jwtOptions.Audience;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters { ValidateAudience = true, };
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    // https://stackoverflow.com/a/53627747, 
+                    // https://nikiforovall.github.io/aspnetcore/dotnet/2022/08/24/dotnet-keycloak-auth.html
+                    ValidateAudience = false,
+                    NameClaimType = "preferred_username"
+                };
             });
     }
 
