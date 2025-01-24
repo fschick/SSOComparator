@@ -29,7 +29,7 @@ export class AuthenticationService {
 
   public init(): Observable<any> {
     const authConfig: AuthConfig = {
-      scope: 'openid profile email offline_access',
+      scope: environment.scopes,
       responseType: 'code',
       oidc: true,
       clientId: environment.clientId,
