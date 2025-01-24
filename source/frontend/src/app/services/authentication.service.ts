@@ -33,6 +33,7 @@ export class AuthenticationService {
       responseType: 'code',
       oidc: true,
       clientId: environment.clientId,
+      customQueryParams: {audience: environment.audience},
       issuer: environment.authority,
       redirectUri: location.origin,
       postLogoutRedirectUri: location.origin,

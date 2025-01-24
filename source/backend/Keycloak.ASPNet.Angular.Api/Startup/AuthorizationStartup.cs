@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
+using System.Collections.Generic;
 
 namespace Keycloak.ASPNet.Angular.Api.Startup;
 
@@ -35,6 +36,10 @@ internal static class AuthorizationStartup
             .GetSection("Swagger")
             .GetValue<string>("ClientId");
 
+        var audience = configuration
+            .GetSection("JwtBearer")
+            .GetValue<string>("Audience");
+
         var scopes = configuration
             .GetSection("Swagger")
             .GetValue<string>("Scopes")?
@@ -44,6 +49,7 @@ internal static class AuthorizationStartup
         options.OAuthClientId(clientId);
         options.OAuthScopes(scopes);
         options.OAuthUsePkce();
+        options.OAuthAdditionalQueryStringParams(new Dictionary<string, string>() { ["audience"] = audience });
         options.EnablePersistAuthorization();
     }
 }
